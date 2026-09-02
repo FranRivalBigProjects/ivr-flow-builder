@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IVR Bot Flow Builder</title>
+<meta name="description" content="Build a numbered IVR phone menu with a greeting and options, and export the flow structure ready to hand to your IVR platform.">
+<meta name="google-site-verification" content="REPLACE_WITH_YOUR_VERIFICATION_CODE">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0d0f12;color:#d7dbe0;font-family:'JetBrains Mono',monospace;line-height:1.6;padding:24px 16px 60px}
+.wrap{max-width:780px;margin:0 auto}
+h1{font-size:22px;color:#7ee787;margin-bottom:6px}
+.subtitle{color:#8b949e;font-size:14px;margin-bottom:24px}
+.panel{background:#14171a;border:1px solid #2a2f36;border-radius:6px;padding:18px;margin-bottom:20px}
+.panel h2{font-size:15px;color:#58a6ff;margin-bottom:12px}
+label{display:block;font-size:12px;color:#8b949e;margin:10px 0 4px}
+input[type=text],textarea{width:100%;background:#0a0c0e;border:1px solid #2a2f36;border-radius:4px;color:#d7dbe0;font-family:'JetBrains Mono',monospace;font-size:13px;padding:10px}
+.opt-row{display:grid;grid-template-columns:60px 1fr 1fr;gap:8px;margin-top:8px}
+.btn{background:#238636;color:#fff;border:none;border-radius:4px;padding:10px 16px;font-family:'JetBrains Mono',monospace;font-size:13px;cursor:pointer;margin-right:8px;margin-top:12px}
+.btn.secondary{background:#21262d;border:1px solid #2a2f36}
+.output{background:#0a0c0e;border:1px solid #2a2f36;border-radius:4px;padding:14px;font-size:13px;color:#d7dbe0;white-space:pre-wrap;margin-top:12px}
+article{font-size:13px;color:#a9b1bb;margin-top:26px}
+article h2{font-size:15px;color:#58a6ff;margin:16px 0 8px}
+article p{margin-bottom:8px}
+footer{text-align:center;font-size:11px;color:#4a5158;margin-top:34px}
+</style></head>
+<body><div class="wrap">
+<h1>IVR Bot Flow Builder</h1>
+<p class="subtitle">Build your greeting and numbered menu options, then export the flow.</p>
+<div class="panel">
+<label>Greeting message</label>
+<textarea id="greeting">Thank you for calling. Please listen carefully as our menu options have changed.</textarea>
+<h2 style="margin-top:16px;">Menu Options (up to 5)</h2>
+<div id="optionsForm"></div>
+<button class="btn" id="generateBtn">Generate Flow</button>
+<button class="btn secondary" id="copyBtn">Copy</button>
+<div class="output" id="output"></div>
+</div>
+<article><h2>Using This Flow</h2><p>Most IVR platforms (Twilio Studio, Amazon Connect, Genesys) let you map each digit press to an action, transfer, or sub-menu. Use this structure as your planning document before building the actual flow in your platform's visual editor.</p></article>
+<footer>Client-side tool. Nothing you enter here is stored or sent anywhere.</footer>
+</div>
+<script>
+function buildForm(){
+  var html='';
+  var i;
+  for(i=1;i<=5;i++){
+    html+='<div class="opt-row"><input type="text" class="optKey" value="'+i+'"><input type="text" class="optLabel" placeholder="e.g. Sales"><input type="text" class="optDest" placeholder="e.g. transfer to sales line"></div>';
+  }
+  document.getElementById('optionsForm').innerHTML=html;
+}
+function generate(){
+  var greeting=document.getElementById('greeting').value.trim();
+  var keys=document.getElementsByClassName('optKey');
+  var labels=document.getElementsByClassName('optLabel');
+  var dests=document.getElementsByClassName('optDest');
+  var text='GREETING:\n'+greeting+'\n\nMENU OPTIONS:\n';
+  var i;
+  for(i=0;i<keys.length;i++){
+    var label=labels[i].value.trim();
+    var dest=dests[i].value.trim();
+    if(label){
+      text+='Press '+keys[i].value.trim()+': '+label+(dest?' -> '+dest:'')+'\n';
+    }
+  }
+  document.getElementById('output').innerHTML=text;
+}
+function copyOutput(){
+  var text=document.getElementById('output').innerText||document.getElementById('output').textContent;
+  if(navigator.clipboard){ navigator.clipboard.writeText(text); }
+}
+buildForm();
+document.getElementById('generateBtn').addEventListener('click',generate);
+document.getElementById('copyBtn').addEventListener('click',copyOutput);
+generate();
+</script>
+</body></html>
